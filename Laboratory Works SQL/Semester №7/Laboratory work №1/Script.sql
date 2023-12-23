@@ -44,11 +44,11 @@ CREATE TABLE Permissions
 GO
 
 -- Триггер для перобразования пароля в хэш
-CREATE TRIGGER Users_GetHash_INSERT
+CREATE TRIGGER Users_GetHash_UPDATE
     ON Users
     INSTEAD OF UPDATE AS
 BEGIN
-    DECLARE @index INT = 0,
+    DECLARE @index INT = 1,
         @Uid UNIQUEIDENTIFIER,
         @Surname NVARCHAR(30),
         @Name NVARCHAR(30),
@@ -93,11 +93,11 @@ CREATE TABLE Users
 GO
 
 -- Триггер для перобразования пароля в хэш, а также включающий проверки CHECK
-CREATE TRIGGER Users_GetHash_Check_INSERT
+CREATE TRIGGER Users_GetHash_Check_UPDATE
     ON Users
     INSTEAD OF UPDATE AS
 BEGIN
-    DECLARE @index INT = 0,
+    DECLARE @index INT = 1,
         @Uid UNIQUEIDENTIFIER,
         @Surname NVARCHAR(30),
         @Name NVARCHAR(30),
@@ -129,6 +129,8 @@ BEGIN
             -- Вставка
             INSERT INTO Users(Uid, Surname, Name, Login, Password)
             VALUES (@Uid, @Surname, @Name, @Login, HASHBYTES('SHA2_512', @Password));
+
+            SET @index = @index + 1;
         END;
 END;
 GO
@@ -145,7 +147,7 @@ GO
 -- Генерация записей
 DECLARE @start DATETIME2 = GETDATE(), @end DATETIME2, @index INT = 0;
 
-WHILE @index < 10000
+WHILE @index < 1000
     BEGIN
         INSERT INTO Users(Surname, Name, Login, Password)
         VALUES (N'Фамилия',

@@ -64,7 +64,7 @@ CREATE TRIGGER Users_GetHash_INSERT
     ON Users
     INSTEAD OF UPDATE AS
 BEGIN
-    DECLARE @index INT = 0,
+    DECLARE @index INT = 1,
         @Uid UNIQUEIDENTIFIER,
         @Surname NVARCHAR(30),
         @Name NVARCHAR(30),
@@ -82,6 +82,8 @@ BEGIN
             -- Вставка
             INSERT INTO Users(Uid, Surname, Name, Login, Password)
             VALUES (@Uid, @Surname, @Name, @Login, HASHBYTES('SHA2_512', @Password));
+            
+            SET @index = @index + 1;
         END;
 END;
 GO
@@ -114,11 +116,11 @@ CREATE TABLE Users
 GO
 
 -- Триггер для перобразования пароля в хэш, а также включающий проверки CHECK
-CREATE TRIGGER Users_GetHash_Check_INSERT
+CREATE TRIGGER Users_GetHash_Check_UPDATE
     ON Users
     INSTEAD OF UPDATE AS
 BEGIN
-    DECLARE @index INT = 0,
+    DECLARE @index INT = 1,
         @Uid UNIQUEIDENTIFIER,
         @Surname NVARCHAR(30),
         @Name NVARCHAR(30),
@@ -150,6 +152,8 @@ BEGIN
             -- Вставка
             INSERT INTO Users(Uid, Surname, Name, Login, Password)
             VALUES (@Uid, @Surname, @Name, @Login, HASHBYTES('SHA2_512', @Password));
+            
+            SET @index = @index + 1;
         END;
 END;
 GO
